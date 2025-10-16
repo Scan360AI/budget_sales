@@ -61,36 +61,6 @@
         </div>
     </div>
 
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-screen hidden">
-        <div class="login-card">
-            <div class="login-header">
-                <i data-lucide="bar-chart-3" class="logo-icon"></i>
-                <h1>Budget & Provvigioni</h1>
-                <p>Accedi con magic link</p>
-            </div>
-            
-            <form id="loginForm" class="login-form">
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" placeholder="mario.rossi@azienda.it" required />
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i data-lucide="mail"></i>
-                    Invia Magic Link
-                </button>
-            </form>
-            
-            <div id="loginMessage" class="login-message hidden"></div>
-            
-            <button id="openConfigFromLogin" class="btn-text">
-                <i data-lucide="settings"></i>
-                Configura Supabase
-            </button>
-        </div>
-    </div>
-
     <!-- App Layout -->
     <div id="appLayout" class="app-layout hidden">
         <!-- Sidebar -->
@@ -128,11 +98,6 @@
                     <i data-lucide="settings"></i>
                     <span>Configurazione</span>
                 </button>
-                <button id="logoutBtn" class="nav-item" style="border: none; background: none; width: 100%; text-align: left; cursor: pointer;">
-                    <i data-lucide="log-out"></i>
-                    <span>Logout</span>
-                </button>
-                <div class="user-info" id="userInfo"></div>
             </div>
         </aside>
 

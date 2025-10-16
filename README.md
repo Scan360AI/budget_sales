@@ -33,13 +33,7 @@ Web app minimale per monitorare Budget vs Consuntivo e calcolare provvigioni per
    - **Supabase URL**: `https://xxxxx.supabase.co`
    - **Supabase Anon Key**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
 3. Clicca "Salva Configurazione"
-
-### 4. Login
-
-1. Inserisci la tua email
-2. Clicca "Invia Magic Link"
-3. Controlla la tua casella email
-4. Clicca sul link ricevuto per accedere
+4. L'app si apre automaticamente con i dati demo già caricati!
 
 ## 📊 Dati Demo
 
@@ -185,10 +179,12 @@ Usa [Lucide Icons](https://lucide.dev) per tutte le icone
 
 ## 🔐 Sicurezza
 
-- **RLS attive** su tutte le tabelle Supabase
-- Solo utenti **autenticati** possono accedere ai dati
-- **Magic link** per autenticazione passwordless
-- Nessun dato sensibile oltre email e nomi agenti
+- **Accesso aperto** - Nessuna autenticazione richiesta (uso interno)
+- **RLS disabilitato** - Per semplicità MVP
+- Configura le credenziali Supabase solo al primo accesso
+- Per uso in produzione, considera di abilitare autenticazione
+
+⚠️ **Nota**: Questa configurazione è ideale per uso interno/demo. Per ambienti di produzione con dati sensibili, abilita l'autenticazione e RLS.
 
 ## 🐛 Troubleshooting
 
@@ -196,18 +192,15 @@ Usa [Lucide Icons](https://lucide.dev) per tutte le icone
 - Verifica che URL e Key siano corretti
 - Assicurati che il progetto Supabase sia attivo
 
-### "Errore di autenticazione"
-- Controlla che Email Auth sia abilitato in Supabase
-- Verifica la configurazione SMTP per l'invio email
-
 ### "Nessun dato caricato"
-- Verifica che le RLS policies siano configurate correttamente
-- Esegui nuovamente lo script `supabase-setup.sql`
+- Verifica che lo script `supabase-setup.sql` sia stato eseguito correttamente
+- Controlla nella console SQL di Supabase: `SELECT * FROM agents;`
+- Dovresti vedere 8 agenti
 
 ### Import fallisce
 - Controlla che il formato CSV sia corretto (header + dati)
 - Verifica encoding UTF-8
-- Controlla console browser per errori specifici
+- Controlla console browser (F12) per errori specifici
 
 ## 📞 Supporto
 

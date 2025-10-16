@@ -28,10 +28,15 @@ function initializeApp() {
         showSupabaseConfigModal();
     } else {
         initializeSupabase(config.url, config.key);
-        checkAuth();
+        startApp();
     }
     
     setupEventListeners();
+}
+
+async function startApp() {
+    showApp();
+    await loadAllData();
 }
 
 // ===== SUPABASE CONFIGURATION =====
@@ -72,83 +77,8 @@ function hideSupabaseConfigModal() {
     document.getElementById('supabaseConfigModal').classList.add('hidden');
 }
 
-// ===== AUTHENTICATION =====
-async function checkAuth() {
-    showLoading();
-    
-    try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session) {
-            currentUser = session.user;
-            showApp();
-            await loadAllData();
-        } else {
-            showLogin();
-        }
-    } catch (error) {
-        console.error('Auth check error:', error);
-        showToast('Errore di autenticazione', 'error');
-        showLogin();
-    } finally {
-        hideLoading();
-    }
-}
-
-async function sendMagicLink(email) {
-    showLoading();
-    
-    try {
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: window.location.origin
-            }
-        });
-        
-        if (error) throw error;
-        
-        document.getElementById('loginMessage').textContent = 
-            'Magic link inviato! Controlla la tua email.';
-        document.getElementById('loginMessage').classList.add('success');
-        document.getElementById('loginMessage').classList.remove('hidden');
-        
-        showToast('Magic link inviato con successo', 'success');
-    } catch (error) {
-        console.error('Magic link error:', error);
-        showToast('Errore nell\'invio del magic link: ' + error.message, 'error');
-    } finally {
-        hideLoading();
-    }
-}
-
-async function logout() {
-    showLoading();
-    
-    try {
-        await supabase.auth.signOut();
-        currentUser = null;
-        showLogin();
-        showToast('Logout effettuato', 'success');
-    } catch (error) {
-        showToast('Errore nel logout', 'error');
-    } finally {
-        hideLoading();
-    }
-}
-
-function showLogin() {
-    document.getElementById('loginScreen').classList.remove('hidden');
-    document.getElementById('appLayout').classList.add('hidden');
-}
-
 function showApp() {
-    document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('appLayout').classList.remove('hidden');
-    
-    if (currentUser) {
-        document.getElementById('userInfo').textContent = currentUser.email;
-    }
 }
 
 // ===== DATA LOADING =====
@@ -1354,7 +1284,7 @@ function setupEventListeners() {
         saveSupabaseConfig(url, key);
         initializeSupabase(url, key);
         hideSupabaseConfigModal();
-        checkAuth();
+        startApp();
         showToast('Configurazione salvata', 'success');
     });
     
@@ -1372,18 +1302,7 @@ function setupEventListeners() {
         lucide.createIcons();
     });
     
-    document.getElementById('openConfigFromLogin').addEventListener('click', showSupabaseConfigModal);
     document.getElementById('openConfigBtn').addEventListener('click', showSupabaseConfigModal);
-    
-    // Login
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = document.getElementById('loginEmail').value;
-        sendMagicLink(email);
-    });
-    
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', logout);
     
     // Navigation
     document.querySelectorAll('.nav-item[data-page]').forEach(item => {

@@ -94,10 +94,13 @@ CREATE INDEX IF NOT EXISTS idx_sales_ym_product ON sales(ym, product_id);
 CREATE INDEX IF NOT EXISTS idx_commission_rules_dates ON commission_rules_general(valid_from, valid_to);
 CREATE INDEX IF NOT EXISTS idx_sales_external_ref ON sales(ym, agent_id, product_id, external_ref);
 
--- 3) ROW LEVEL SECURITY (RLS)
+-- 3) ROW LEVEL SECURITY (RLS) - DISABILITATO
 -- =====================================================
+-- Per MVP senza autenticazione, RLS è disabilitato
+-- Tutti possono accedere ai dati
 
--- Abilita RLS su tutte le tabelle
+-- Se in futuro vuoi abilitare RLS, decommentare:
+/*
 ALTER TABLE agents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE months ENABLE ROW LEVEL SECURITY;
@@ -106,41 +109,41 @@ ALTER TABLE sales ENABLE ROW LEVEL SECURITY;
 ALTER TABLE commission_rules_general ENABLE ROW LEVEL SECURITY;
 ALTER TABLE appointments_kpi_raw ENABLE ROW LEVEL SECURITY;
 
--- Policy: solo utenti autenticati possono accedere
-CREATE POLICY "Allow authenticated users all operations on agents"
+CREATE POLICY "Allow all operations on agents"
     ON agents FOR ALL
-    USING (auth.role() = 'authenticated')
-    WITH CHECK (auth.role() = 'authenticated');
+    USING (true)
+    WITH CHECK (true);
 
-CREATE POLICY "Allow authenticated users all operations on products"
+CREATE POLICY "Allow all operations on products"
     ON products FOR ALL
-    USING (auth.role() = 'authenticated')
-    WITH CHECK (auth.role() = 'authenticated');
+    USING (true)
+    WITH CHECK (true);
 
-CREATE POLICY "Allow authenticated users all operations on months"
+CREATE POLICY "Allow all operations on months"
     ON months FOR ALL
-    USING (auth.role() = 'authenticated')
-    WITH CHECK (auth.role() = 'authenticated');
+    USING (true)
+    WITH CHECK (true);
 
-CREATE POLICY "Allow authenticated users all operations on budgets"
+CREATE POLICY "Allow all operations on budgets"
     ON budgets FOR ALL
-    USING (auth.role() = 'authenticated')
-    WITH CHECK (auth.role() = 'authenticated');
+    USING (true)
+    WITH CHECK (true);
 
-CREATE POLICY "Allow authenticated users all operations on sales"
+CREATE POLICY "Allow all operations on sales"
     ON sales FOR ALL
-    USING (auth.role() = 'authenticated')
-    WITH CHECK (auth.role() = 'authenticated');
+    USING (true)
+    WITH CHECK (true);
 
-CREATE POLICY "Allow authenticated users all operations on commission_rules_general"
+CREATE POLICY "Allow all operations on commission_rules_general"
     ON commission_rules_general FOR ALL
-    USING (auth.role() = 'authenticated')
-    WITH CHECK (auth.role() = 'authenticated');
+    USING (true)
+    WITH CHECK (true);
 
-CREATE POLICY "Allow authenticated users all operations on appointments_kpi_raw"
+CREATE POLICY "Allow all operations on appointments_kpi_raw"
     ON appointments_kpi_raw FOR ALL
-    USING (auth.role() = 'authenticated')
-    WITH CHECK (auth.role() = 'authenticated');
+    USING (true)
+    WITH CHECK (true);
+*/
 
 -- 4) DATI DEMO
 -- =====================================================

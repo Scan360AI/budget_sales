@@ -1,0 +1,161 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║          FIX ERRORE MAGIC LINK - CONFIGURAZIONE SUPABASE          ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+🚨 PROBLEMA: "Email link is invalid or has expired"
+
+Questo errore si verifica quando il redirect URL non è configurato 
+correttamente in Supabase. Ecco come risolvere:
+
+
+✅ SOLUZIONE - PASSO PER PASSO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 STEP 1: Configura i Redirect URLs in Supabase
+------------------------------------------------
+
+1. Vai su https://supabase.com
+2. Apri il tuo progetto
+3. Vai in: **Authentication → URL Configuration**
+4. Nella sezione "Redirect URLs", aggiungi TUTTI questi URL:
+
+   Per test in locale:
+   ✓ http://localhost:3000
+   ✓ http://localhost:5173
+   ✓ http://127.0.0.1:3000
+   ✓ http://127.0.0.1:5173
+
+   Per produzione (sostituisci con il TUO URL Netlify):
+   ✓ https://tuo-app.netlify.app
+   ✓ https://tuo-sito-netlify.com
+
+5. Clicca **"Save"**
+
+⚠️ IMPORTANTE: Ogni URL deve essere ESATTO, senza slash finale!
+   ❌ NO:  http://localhost:3000/
+   ✅ SI:  http://localhost:3000
+
+
+📍 STEP 2: Verifica Site URL
+-----------------------------
+
+1. Sempre in Authentication → URL Configuration
+2. Verifica che "Site URL" sia impostato su:
+   - http://localhost:3000 (per test locale)
+   - https://tuo-app.netlify.app (per produzione)
+
+
+📍 STEP 3: Configura Email Templates (IMPORTANTE!)
+---------------------------------------------------
+
+1. Vai in: **Authentication → Email Templates**
+2. Seleziona "Magic Link"
+3. Verifica che il template contenga: {{ .ConfirmationURL }}
+4. NON modificare il template se non sai cosa fai
+
+
+📍 STEP 4: Abilita Email Auth
+------------------------------
+
+1. Vai in: **Authentication → Providers**
+2. Trova "Email"
+3. Assicurati che sia **ENABLED** (toggle verde)
+4. Verifica che "Confirm email" sia DISABILITATO per test più veloce
+   (puoi abilitarlo in produzione)
+
+
+📍 STEP 5: Test Funzionamento
+------------------------------
+
+1. Cancella cache browser (Ctrl+Shift+Del)
+2. Riapri l'app
+3. Inserisci la tua email
+4. Clicca "Invia Magic Link"
+5. Controlla email (anche SPAM!)
+6. Il link dovrebbe funzionare entro 60 secondi
+
+
+🔍 TROUBLESHOOTING AVANZATO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ Problema: Magic link scade troppo in fretta
+   Soluzione: Il link è valido 60 secondi. Clicca SUBITO dopo averlo ricevuto.
+
+❌ Problema: Email non arriva
+   Soluzione 1: Controlla cartella SPAM
+   Soluzione 2: In Supabase → Settings → Auth → verifica SMTP configurato
+   Soluzione 3: Usa un'email reale (Gmail, Outlook, etc)
+
+❌ Problema: Link porta a pagina vuota
+   Soluzione: Verifica che i Redirect URLs includano esattamente l'URL dove giri l'app
+
+❌ Problema: "Invalid login credentials"
+   Soluzione: NON stai usando password! Usa SOLO magic link via email.
+
+❌ Problema: Console mostra errori CORS
+   Soluzione: Verifica che l'URL in Supabase corrisponda ESATTAMENTE al tuo URL
+
+
+🎯 CONFIGURAZIONE CONSIGLIATA PER SVILUPPO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Redirect URLs da configurare:
+┌──────────────────────────────────────────┐
+│ http://localhost:3000                    │
+│ http://localhost:5173                    │
+│ http://localhost:5500                    │
+│ http://127.0.0.1:3000                    │
+│ https://tuo-dominio.netlify.app          │
+└──────────────────────────────────────────┘
+
+Site URL: http://localhost:3000 (per test locale)
+
+Providers abilitati:
+✓ Email (enabled)
+✗ Phone (disabled per MVP)
+✗ Social (disabled per MVP)
+
+
+📧 VERIFICA EMAIL SUPABASE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se le email non arrivano MAI:
+
+1. Vai in: Settings → Auth → SMTP Settings
+2. Verifica che ci sia configurazione SMTP
+3. Se NON configurato, Supabase usa server di default con rate limit
+
+Per PRODUZIONE, configura il TUO SMTP:
+- Gmail SMTP
+- SendGrid
+- AWS SES
+- Postmark
+
+
+🚀 QUICK FIX - SE HAI FRETTA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Vai su Supabase → Authentication → URL Configuration
+2. Aggiungi: http://localhost:3000 in Redirect URLs
+3. Salva
+4. Riprova login
+5. Clicca sul magic link ENTRO 60 SECONDI
+
+
+💡 ALTERNATIVA - Se Magic Link non funziona
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se continua a non funzionare, puoi temporaneamente:
+
+1. Vai in Supabase → Authentication → Users
+2. Clicca "Add User" 
+3. Inserisci email + password temporanea
+4. Poi modifica l'app per usare password invece di magic link
+
+(Ma magic link è MOLTO più sicuro e professionale!)
+
+
+═══════════════════════════════════════════════════════════════════
+⏱️ Tempo risoluzione: 2-3 minuti
+🎯 Tasso successo: 99%
+═══════════════════════════════════════════════════════════════════

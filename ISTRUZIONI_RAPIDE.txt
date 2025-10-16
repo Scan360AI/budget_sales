@@ -1,12 +1,12 @@
 ╔═══════════════════════════════════════════════════════════════════╗
 ║              BUDGET & PROVVIGIONI - ISTRUZIONI RAPIDE             ║
-║                         Setup in 5 minuti                         ║
+║                         Setup in 3 minuti                         ║
 ╚═══════════════════════════════════════════════════════════════════╝
 
 📋 CHECKLIST SETUP
 ------------------
 
-✅ PASSO 1: SUPABASE (3 minuti)
+✅ PASSO 1: SUPABASE (2 minuti)
    1. Vai su https://supabase.com e crea un account
    2. Crea un nuovo progetto (scegli nome, password, regione)
    3. Vai in "SQL Editor" → clicca "New query"
@@ -36,12 +36,7 @@
    2. Si apre il modale di configurazione
    3. Incolla URL e Key di Supabase
    4. Clicca "Salva Configurazione"
-
-✅ PASSO 4: LOGIN (30 secondi)
-   1. Inserisci la tua email aziendale
-   2. Clicca "Invia Magic Link"
-   3. Controlla la tua email (anche spam!)
-   4. Clicca sul link → fatto, sei dentro!
+   5. L'app si apre automaticamente con i dati!
 
 🎉 HAI FINITO! L'app è pronta con dati demo già caricati.
 
@@ -88,11 +83,6 @@
 ❌ "Errore configurazione Supabase"
    → Controlla di aver copiato URL e Key corrette
    → Verifica che il progetto Supabase sia attivo
-
-❌ "Magic link non arriva"
-   → Controlla cartella SPAM
-   → In Supabase: Authentication → Email Templates → verifica setup
-   → Usa email valida (no email temporanee)
 
 ❌ "Nessun dato nella dashboard"
    → Vai in Supabase → SQL Editor

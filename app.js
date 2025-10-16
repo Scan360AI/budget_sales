@@ -1271,38 +1271,47 @@ async function saveCommissionRule() {
 
 // ===== NAVIGATION =====
 function setupEventListeners() {
-    // Config modal
-    document.getElementById('saveSupabaseConfig').addEventListener('click', () => {
-        const url = document.getElementById('supabaseUrl').value.trim();
-        const key = document.getElementById('supabaseKey').value.trim();
-        
-        if (!url || !key) {
-            showToast('Inserisci URL e Key', 'error');
-            return;
-        }
-        
-        saveSupabaseConfig(url, key);
-        initializeSupabase(url, key);
-        hideSupabaseConfigModal();
-        startApp();
-        showToast('Configurazione salvata', 'success');
-    });
+    // Config modal - sempre disponibile
+    const saveConfigBtn = document.getElementById('saveSupabaseConfig');
+    if (saveConfigBtn) {
+        saveConfigBtn.addEventListener('click', () => {
+            const url = document.getElementById('supabaseUrl').value.trim();
+            const key = document.getElementById('supabaseKey').value.trim();
+            
+            if (!url || !key) {
+                showToast('Inserisci URL e Key', 'error');
+                return;
+            }
+            
+            saveSupabaseConfig(url, key);
+            initializeSupabase(url, key);
+            hideSupabaseConfigModal();
+            startApp();
+            showToast('Configurazione salvata', 'success');
+        });
+    }
     
-    document.getElementById('toggleKeyVisibility').addEventListener('click', () => {
-        const input = document.getElementById('supabaseKey');
-        const icon = document.querySelector('#toggleKeyVisibility i');
-        
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.setAttribute('data-lucide', 'eye-off');
-        } else {
-            input.type = 'password';
-            icon.setAttribute('data-lucide', 'eye');
-        }
-        lucide.createIcons();
-    });
+    const toggleKeyBtn = document.getElementById('toggleKeyVisibility');
+    if (toggleKeyBtn) {
+        toggleKeyBtn.addEventListener('click', () => {
+            const input = document.getElementById('supabaseKey');
+            const icon = document.querySelector('#toggleKeyVisibility i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        });
+    }
     
-    document.getElementById('openConfigBtn').addEventListener('click', showSupabaseConfigModal);
+    const openConfigBtn = document.getElementById('openConfigBtn');
+    if (openConfigBtn) {
+        openConfigBtn.addEventListener('click', showSupabaseConfigModal);
+    }
     
     // Navigation
     document.querySelectorAll('.nav-item[data-page]').forEach(item => {
@@ -1314,35 +1323,76 @@ function setupEventListeners() {
     });
     
     // Filters
-    document.getElementById('applyFiltersBtn').addEventListener('click', applyFilters);
+    const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+    if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', applyFilters);
+    }
     
     // Export
-    document.getElementById('exportBtn').addEventListener('click', exportCSV);
+    const exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportCSV);
+    }
     
     // Agents CRUD
-    document.getElementById('addAgentBtn').addEventListener('click', addAgent);
+    const addAgentBtn = document.getElementById('addAgentBtn');
+    if (addAgentBtn) {
+        addAgentBtn.addEventListener('click', addAgent);
+    }
     
     // Products CRUD
-    document.getElementById('addProductBtn').addEventListener('click', addProduct);
+    const addProductBtn = document.getElementById('addProductBtn');
+    if (addProductBtn) {
+        addProductBtn.addEventListener('click', addProduct);
+    }
     
     // Import
-    document.getElementById('budgetFileInput').addEventListener('change', handleBudgetFile);
-    document.getElementById('salesFileInput').addEventListener('change', handleSalesFile);
-    document.getElementById('kpiFileInput').addEventListener('change', handleKpiFile);
-    document.getElementById('importBudgetBtn').addEventListener('click', importBudget);
-    document.getElementById('importSalesBtn').addEventListener('click', importSales);
+    const budgetFileInput = document.getElementById('budgetFileInput');
+    if (budgetFileInput) {
+        budgetFileInput.addEventListener('change', handleBudgetFile);
+    }
+    
+    const salesFileInput = document.getElementById('salesFileInput');
+    if (salesFileInput) {
+        salesFileInput.addEventListener('change', handleSalesFile);
+    }
+    
+    const kpiFileInput = document.getElementById('kpiFileInput');
+    if (kpiFileInput) {
+        kpiFileInput.addEventListener('change', handleKpiFile);
+    }
+    
+    const importBudgetBtn = document.getElementById('importBudgetBtn');
+    if (importBudgetBtn) {
+        importBudgetBtn.addEventListener('click', importBudget);
+    }
+    
+    const importSalesBtn = document.getElementById('importSalesBtn');
+    if (importSalesBtn) {
+        importSalesBtn.addEventListener('click', importSales);
+    }
     
     // Rules
-    document.getElementById('validateTiersBtn').addEventListener('click', validateTiers);
-    document.getElementById('saveRulesBtn').addEventListener('click', saveCommissionRule);
+    const validateTiersBtn = document.getElementById('validateTiersBtn');
+    if (validateTiersBtn) {
+        validateTiersBtn.addEventListener('click', validateTiers);
+    }
+    
+    const saveRulesBtn = document.getElementById('saveRulesBtn');
+    if (saveRulesBtn) {
+        saveRulesBtn.addEventListener('click', saveCommissionRule);
+    }
     
     // Set default tiers in editor
-    document.getElementById('tiersEditor').value = JSON.stringify([
-        {"min_avg_price": 0, "max_avg_price": 50, "rate": 0.015},
-        {"min_avg_price": 50, "max_avg_price": 100, "rate": 0.020},
-        {"min_avg_price": 100, "max_avg_price": 150, "rate": 0.025},
-        {"min_avg_price": 150, "max_avg_price": null, "rate": 0.030}
-    ], null, 2);
+    const tiersEditor = document.getElementById('tiersEditor');
+    if (tiersEditor) {
+        tiersEditor.value = JSON.stringify([
+            {"min_avg_price": 0, "max_avg_price": 50, "rate": 0.015},
+            {"min_avg_price": 50, "max_avg_price": 100, "rate": 0.020},
+            {"min_avg_price": 100, "max_avg_price": 150, "rate": 0.025},
+            {"min_avg_price": 150, "max_avg_price": null, "rate": 0.030}
+        ], null, 2);
+    }
 }
 
 function navigateToPage(pageName) {

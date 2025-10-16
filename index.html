@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget & Provvigioni - MVP</title>
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- PapaParse per CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Configurazione Supabase (modale) -->
+    <div id="supabaseConfigModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>
+                <i data-lucide="settings"></i>
+                Configurazione Supabase
+            </h2>
+            <p class="text-muted">Inserisci le credenziali del tuo progetto Supabase</p>
+            
+            <div class="form-group">
+                <label for="supabaseUrl">Supabase URL</label>
+                <input type="text" id="supabaseUrl" placeholder="https://xxxxx.supabase.co" />
+            </div>
+            
+            <div class="form-group">
+                <label for="supabaseKey">Supabase Anon Key</label>
+                <div class="input-with-toggle">
+                    <input type="password" id="supabaseKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
+                    <button type="button" id="toggleKeyVisibility" class="btn-icon">
+                        <i data-lucide="eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="saveSupabaseConfig" class="btn btn-primary">
+                    <i data-lucide="save"></i>
+                    Salva Configurazione
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen hidden">
+        <div class="login-card">
+            <div class="login-header">
+                <i data-lucide="bar-chart-3" class="logo-icon"></i>
+                <h1>Budget & Provvigioni</h1>
+                <p>Accedi con magic link</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="mario.rossi@azienda.it" required />
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i data-lucide="mail"></i>
+                    Invia Magic Link
+                </button>
+            </form>
+            
+            <div id="loginMessage" class="login-message hidden"></div>
+            
+            <button id="openConfigFromLogin" class="btn-text">
+                <i data-lucide="settings"></i>
+                Configura Supabase
+            </button>
+        </div>
+    </div>
+
+    <!-- App Layout -->
+    <div id="appLayout" class="app-layout hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i data-lucide="bar-chart-3" class="logo-icon"></i>
+                <span class="logo-text">Budget & Provvigioni</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#import" class="nav-item" data-page="import">
+                    <i data-lucide="upload"></i>
+                    <span>Importa Dati</span>
+                </a>
+                <a href="#rules" class="nav-item" data-page="rules">
+                    <i data-lucide="calculator"></i>
+                    <span>Regole Provvigioni</span>
+                </a>
+                <a href="#agents" class="nav-item" data-page="agents">
+                    <i data-lucide="users"></i>
+                    <span>Agenti</span>
+                </a>
+                <a href="#products" class="nav-item" data-page="products">
+                    <i data-lucide="package"></i>
+                    <span>Prodotti</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="openConfigBtn" class="nav-item" style="border: none; background: none; width: 100%; text-align: left; cursor: pointer;">
+                    <i data-lucide="settings"></i>
+                    <span>Configurazione</span>
+                </button>
+                <button id="logoutBtn" class="nav-item" style="border: none; background: none; width: 100%; text-align: left; cursor: pointer;">
+                    <i data-lucide="log-out"></i>
+                    <span>Logout</span>
+                </button>
+                <div class="user-info" id="userInfo"></div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page active">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <button id="exportBtn" class="btn btn-secondary">
+                        <i data-lucide="download"></i>
+                        Esporta CSV
+                    </button>
+                </div>
+                
+                <!-- Filtri -->
+                <div class="filters-card">
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <label for="filterMonth">Periodo</label>
+                            <select id="filterMonth" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterAgent">Agente</label>
+                            <select id="filterAgent" class="form-control" multiple></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterArea">Area</label>
+                            <select id="filterArea" class="form-control" multiple></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterProduct">Prodotto</label>
+                            <select id="filterProduct" class="form-control" multiple></select>
+                        </div>
+                    </div>
+                    <button id="applyFiltersBtn" class="btn btn-primary">
+                        <i data-lucide="filter"></i>
+                        Applica Filtri
+                    </button>
+                </div>
+                
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background: #635bff20;">
+                            <i data-lucide="euro" style="color: #635bff;"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-label">Totale Venduto</div>
+                            <div class="kpi-value" id="kpiTotalSales">€ 0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background: #00d4ff20;">
+                            <i data-lucide="target" style="color: #00d4ff;"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-label">Totale Budget</div>
+                            <div class="kpi-value" id="kpiTotalBudget">€ 0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background: #7c3aed20;">
+                            <i data-lucide="trending-up" style="color: #7c3aed;"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-label">Target Medio</div>
+                            <div class="kpi-value" id="kpiAvgTarget">0%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background: #10b98120;">
+                            <i data-lucide="coins" style="color: #10b981;"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-label">Provvigioni Totali</div>
+                            <div class="kpi-value" id="kpiTotalCommissions">€ 0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grafici -->
+                <div class="charts-grid">
+                    <div class="card">
+                        <h3>Budget vs Venduto (Top 10 Agenti)</h3>
+                        <canvas id="chartBudgetVsSales"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3>% Target per Agente</h3>
+                        <canvas id="chartTargetPercentage"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Tabelle -->
+                <div class="card">
+                    <h3>Riepilogo per Agente</h3>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Agente</th>
+                                    <th>Area</th>
+                                    <th>Budget</th>
+                                    <th>Venduto</th>
+                                    <th>% Target</th>
+                                    <th>Scostamento</th>
+                                    <th>Prezzo Medio</th>
+                                    <th>Rate</th>
+                                    <th>Provvigione</th>
+                                </tr>
+                            </thead>
+                            <tbody id="agentsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Dettaglio per Agente × Prodotto</h3>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Agente</th>
+                                    <th>Prodotto</th>
+                                    <th>Budget Qty</th>
+                                    <th>Budget €</th>
+                                    <th>Venduto Qty</th>
+                                    <th>Venduto €</th>
+                                    <th>% Target</th>
+                                    <th>Scostamento</th>
+                                    <th>Prezzo Medio</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Page -->
+            <div id="importPage" class="page">
+                <div class="page-header">
+                    <h1>Importa Dati</h1>
+                </div>
+                
+                <div class="import-grid">
+                    <!-- Budget CSV -->
+                    <div class="card">
+                        <h3>
+                            <i data-lucide="file-spreadsheet"></i>
+                            Importa Budget (CSV)
+                        </h3>
+                        <p class="text-muted">Formato: ym, agent_code, product_code, qty, amount</p>
+                        
+                        <input type="file" id="budgetFileInput" accept=".csv" class="file-input" />
+                        <label for="budgetFileInput" class="file-label">
+                            <i data-lucide="upload"></i>
+                            Seleziona file CSV
+                        </label>
+                        
+                        <div id="budgetPreview" class="preview-area hidden"></div>
+                        <button id="importBudgetBtn" class="btn btn-primary btn-block hidden">
+                            <i data-lucide="check"></i>
+                            Importa Budget
+                        </button>
+                    </div>
+                    
+                    <!-- Sales CSV -->
+                    <div class="card">
+                        <h3>
+                            <i data-lucide="trending-up"></i>
+                            Importa Vendite (CSV)
+                        </h3>
+                        <p class="text-muted">Formato: ym, agent_code, product_code, qty, amount, source, external_ref</p>
+                        
+                        <input type="file" id="salesFileInput" accept=".csv" class="file-input" />
+                        <label for="salesFileInput" class="file-label">
+                            <i data-lucide="upload"></i>
+                            Seleziona file CSV
+                        </label>
+                        
+                        <div id="salesPreview" class="preview-area hidden"></div>
+                        <button id="importSalesBtn" class="btn btn-primary btn-block hidden">
+                            <i data-lucide="check"></i>
+                            Importa Vendite
+                        </button>
+                    </div>
+                    
+                    <!-- KPI JSON -->
+                    <div class="card">
+                        <h3>
+                            <i data-lucide="calendar-check"></i>
+                            Importa KPI Appuntamenti (JSON)
+                        </h3>
+                        <p class="text-muted">Formato JSON con struttura predefinita</p>
+                        
+                        <input type="file" id="kpiFileInput" accept=".json" class="file-input" />
+                        <label for="kpiFileInput" class="file-label">
+                            <i data-lucide="upload"></i>
+                            Seleziona file JSON
+                        </label>
+                        
+                        <div id="kpiPreview" class="preview-area hidden"></div>
+                        <button id="importKpiBtn" class="btn btn-primary btn-block hidden">
+                            <i data-lucide="check"></i>
+                            Importa KPI
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Import History -->
+                <div class="card">
+                    <h3>Storico Import</h3>
+                    <div id="importHistory" class="import-history">
+                        <p class="text-muted">Nessun import registrato</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rules Page -->
+            <div id="rulesPage" class="page">
+                <div class="page-header">
+                    <h1>Regole Provvigioni</h1>
+                </div>
+                
+                <div class="card">
+                    <h3>Regola Generale Attiva</h3>
+                    <p class="text-muted">Definisci gli scaglioni di provvigione in base al prezzo medio di vendita</p>
+                    
+                    <div class="form-group">
+                        <label for="ruleValidFrom">Valida dal</label>
+                        <input type="date" id="ruleValidFrom" class="form-control" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Scaglioni (Tiers) - JSON</label>
+                        <textarea id="tiersEditor" class="code-editor" rows="12"></textarea>
+                        <small class="text-muted">
+                            Esempio: [{"min_avg_price": 0, "max_avg_price": 50, "rate": 0.015}, ...]
+                        </small>
+                    </div>
+                    
+                    <button id="validateTiersBtn" class="btn btn-secondary">
+                        <i data-lucide="check-circle"></i>
+                        Valida JSON
+                    </button>
+                    <button id="saveRulesBtn" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Salva Regola
+                    </button>
+                    
+                    <div id="tiersValidation" class="validation-message hidden"></div>
+                </div>
+                
+                <div class="card">
+                    <h3>Regole Salvate</h3>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Valida dal</th>
+                                    <th>Valida fino a</th>
+                                    <th>Valuta</th>
+                                    <th>Scaglioni</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rulesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agents Page -->
+            <div id="agentsPage" class="page">
+                <div class="page-header">
+                    <h1>Gestione Agenti</h1>
+                    <button id="addAgentBtn" class="btn btn-primary">
+                        <i data-lucide="plus"></i>
+                        Nuovo Agente
+                    </button>
+                </div>
+                
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Codice</th>
+                                    <th>Nome</th>
+                                    <th>Area</th>
+                                    <th>Attivo</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="agentsCrudTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Page -->
+            <div id="productsPage" class="page">
+                <div class="page-header">
+                    <h1>Gestione Prodotti</h1>
+                    <button id="addProductBtn" class="btn btn-primary">
+                        <i data-lucide="plus"></i>
+                        Nuovo Prodotto
+                    </button>
+                </div>
+                
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Codice</th>
+                                    <th>Nome</th>
+                                    <th>Categoria</th>
+                                    <th>Attivo</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsCrudTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

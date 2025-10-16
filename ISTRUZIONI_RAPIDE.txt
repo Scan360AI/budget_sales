@@ -1,0 +1,138 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║              BUDGET & PROVVIGIONI - ISTRUZIONI RAPIDE             ║
+║                         Setup in 5 minuti                         ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+📋 CHECKLIST SETUP
+------------------
+
+✅ PASSO 1: SUPABASE (3 minuti)
+   1. Vai su https://supabase.com e crea un account
+   2. Crea un nuovo progetto (scegli nome, password, regione)
+   3. Vai in "SQL Editor" → clicca "New query"
+   4. Copia TUTTO il contenuto di "supabase-setup.sql"
+   5. Incolla nell'editor e clicca "Run"
+   6. Verifica che appaia "Success" (crea tabelle + dati demo)
+   
+   Salva queste credenziali:
+   - URL: Settings → API → Project URL
+   - Key: Settings → API → anon public (copia la chiave lunga)
+
+✅ PASSO 2: NETLIFY (1 minuto)
+   OPZIONE A - Drag & Drop (più veloce):
+   1. Vai su https://www.netlify.com
+   2. Fai login/signup
+   3. Trascina la CARTELLA "budget-provvigioni-app" nell'area Deploy
+   4. Attendi 30 secondi → fatto!
+   
+   OPZIONE B - Con Git:
+   1. Crea repository GitHub
+   2. Push del codice
+   3. Connetti a Netlify
+   4. Deploy automatico
+
+✅ PASSO 3: CONFIGURAZIONE APP (30 secondi)
+   1. Apri l'URL dell'app (fornito da Netlify)
+   2. Si apre il modale di configurazione
+   3. Incolla URL e Key di Supabase
+   4. Clicca "Salva Configurazione"
+
+✅ PASSO 4: LOGIN (30 secondi)
+   1. Inserisci la tua email aziendale
+   2. Clicca "Invia Magic Link"
+   3. Controlla la tua email (anche spam!)
+   4. Clicca sul link → fatto, sei dentro!
+
+🎉 HAI FINITO! L'app è pronta con dati demo già caricati.
+
+
+🎯 COSA TROVI GIÀ PRONTO
+-------------------------
+✓ 8 agenti demo (3 aree: Nord, Centro, Sud)
+✓ 8 prodotti demo (3 categorie)
+✓ Budget e vendite per Ottobre 2025
+✓ Regole provvigioni attive (4 scaglioni)
+✓ Dashboard con grafici e KPI
+✓ Tutti i filtri funzionanti
+
+
+📂 FILE INCLUSI PER TEST IMPORT
+--------------------------------
+- example-budget.csv   → Esempio import budget
+- example-sales.csv    → Esempio import vendite
+- example-kpi.json     → Esempio KPI appuntamenti
+
+
+🔧 TEST RAPIDO IMPORT
+----------------------
+1. Vai su "Importa Dati"
+2. Seleziona "example-budget.csv"
+3. Vedi anteprima 10 righe
+4. Clicca "Importa Budget"
+5. Controlla che appaia "Importati X budget"
+6. Vai in Dashboard → applica filtri → vedrai i nuovi dati!
+
+
+💡 SUGGERIMENTI
+----------------
+- Esplora prima i DATI DEMO nella dashboard
+- Prova i FILTRI per mese/agente/area/prodotto
+- Guarda i GRAFICI che si aggiornano automaticamente
+- Esporta CSV per vedere il formato output
+- In "Anagrafiche" puoi modificare agenti/prodotti inline
+- In "Regole Provvigioni" vedi gli scaglioni attivi
+
+
+🆘 PROBLEMI COMUNI
+-------------------
+❌ "Errore configurazione Supabase"
+   → Controlla di aver copiato URL e Key corrette
+   → Verifica che il progetto Supabase sia attivo
+
+❌ "Magic link non arriva"
+   → Controlla cartella SPAM
+   → In Supabase: Authentication → Email Templates → verifica setup
+   → Usa email valida (no email temporanee)
+
+❌ "Nessun dato nella dashboard"
+   → Vai in Supabase → SQL Editor
+   → Esegui: SELECT * FROM agents; (deve tornare 8 righe)
+   → Se vuoto, ri-esegui supabase-setup.sql
+
+❌ "Import fallisce"
+   → File CSV deve essere UTF-8
+   → Prima riga = header (ym,agent_code,product_code,qty,amount)
+   → Usa virgola come separatore (non punto e virgola)
+
+
+📊 FORMATO CSV CORRETTO
+------------------------
+Budget:
+ym,agent_code,product_code,qty,amount
+2025-11,AGT-001,PRD-A,130,52000
+
+Sales:
+ym,agent_code,product_code,qty,amount,source,external_ref
+2025-11,AGT-001,PRD-A,115,46000,ERP,FA-001234
+
+
+🚀 PROSSIMI STEP
+-----------------
+1. Carica TUOI dati reali via CSV
+2. Personalizza regole provvigioni (4 scaglioni default)
+3. Aggiungi nuovi agenti/prodotti in "Anagrafiche"
+4. Esporta report CSV per mese corrente
+5. Condividi URL app con il team
+
+
+📞 SUPPORTO
+-----------
+Se qualcosa non funziona:
+1. Apri Console Browser (F12) → guarda errori in rosso
+2. Vai in Supabase → Logs → SQL Queries → cerca errori
+3. Verifica che le RLS (Row Level Security) siano attive
+
+
+═══════════════════════════════════════════════════════════════════
+Versione: 1.0 | Data: 16 Ottobre 2025 | Owner: Carlo (CIO)
+═══════════════════════════════════════════════════════════════════

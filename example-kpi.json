@@ -1,0 +1,40 @@
+{
+  "source": "crm-demo",
+  "period": "2025-11",
+  "items": [
+    {
+      "agent_code": "AGT-001",
+      "meetings_total": 48,
+      "meetings_held": 40,
+      "deals_won": 7
+    },
+    {
+      "agent_code": "AGT-002",
+      "meetings_total": 55,
+      "meetings_held": 47,
+      "deals_won": 9
+    },
+    {
+      "agent_code": "AGT-003",
+      "meetings_total": 42,
+      "meetings_held": 35,
+      "deals_won": 6
+    },
+    {
+      "agent_code": "AGT-004",
+      "meetings_total": 38,
+      "meetings_held": 32,
+      "deals_won": 5
+    },
+    {
+      "agent_code": "AGT-005",
+      "meetings_total": 44,
+      "meetings_held": 38,
+      "deals_won": 7
+    }
+  ],
+  "meta": {
+    "generated_at": "2025-11-01T08:00:00Z",
+    "version": "1.0"
+  }
+}
